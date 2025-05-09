@@ -1,7 +1,7 @@
 name: 4. Build Loop
 run-name: Build Loop (${{ github.ref_name }})
 on:
-  workflow_call:
+  workflow_dispatch:
 
   ## Remove the "#" sign from the beginning of the line below to get automated builds on push (code changes in your repository)
   #push:
@@ -297,9 +297,7 @@ jobs:
 
       # Install project dependencies
       - name: Install Project Dependencies
-        run: |
-          gem install fastlane -NV
-          bundle install
+        run: bundle install
 
       # Sync the GitHub runner clock with the Windows time server (workaround as suggested in https://github.com/actions/runner/issues/2996)
       - name: Sync clock
