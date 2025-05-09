@@ -1,27 +1,24 @@
 name: 2. Add Identifiers
 run-name: Add Identifiers (${{ github.ref_name }})
-
 on:
-  workflow_call:
+  workflow_dispatch:
 
 jobs:
   validate:
     name: Validate
     uses: ./.github/workflows/validate_secrets.yml
     secrets: inherit
-
+  
   identifiers:
     name: Add Identifiers
     needs: validate
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
-      # Optional: Manuell Xcode-Version auswählen
-      #- name: Select Xcode version
-      #  run: sudo xcode-select --switch /Applications/Xcode_15.4.app/Contents/Developer
-
+      # Checks-out the repo
       - name: Checkout Repo
         uses: actions/checkout@v4
-
+      
+      # Patch Fastlane Match to not print tables
       - name: Patch Match Tables
         run: |
           TABLE_PRINTER_PATH=$(ruby -e 'puts Gem::Specification.find_by_name("fastlane").gem_dir')/match/lib/match/table_printer.rb
@@ -32,14 +29,15 @@ jobs:
             exit 1
           fi
 
+      # Install project dependencies
       - name: Install Project Dependencies
-        run: |
-          gem install fastlane -NV
-          bundle install
+        run: bundle install
 
-      - name: Sync Clock
+      # Sync the GitHub runner clock with the Windows time server (workaround as suggested in https://github.com/actions/runner/issues/2996)
+      - name: Sync clock
         run: sudo sntp -sS time.windows.com
-
+      
+      # Create or update identifiers for app
       - name: Fastlane Provision
         run: bundle exec fastlane identifiers
         env:
