@@ -166,24 +166,23 @@ jobs:
 
       # Keep repository "alive": add empty commits to ALIVE_BRANCH after "time_elapsed" days of inactivity to avoid inactivation of scheduled workflows
       - name: Keep repository alive (manual commit)
-      if: |
-        needs.check_alive_and_permissions.outputs.WORKFLOW_PERMISSION == 'true' &&
-        (vars.SCHEDULED_BUILD != 'false' || vars.SCHEDULED_SYNC != 'false')
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git fetch origin ${{ steps.check_branch.outputs.ALIVE_BRANCH }}
-        git checkout ${{ steps.check_branch.outputs.ALIVE_BRANCH }}
-        
-        if [ -z "$(git log --since='20 days ago' --oneline)" ]; then
-          echo "Trigger keepalive commit"
-          date > keepalive.txt
-          git add keepalive.txt
-          git commit -m "Keepalive: automated commit to prevent inactivity"
-          git push origin ${{ steps.check_branch.outputs.ALIVE_BRANCH }}
-        else
-          echo "Recent commit found — no keepalive commit needed."
-        fi
+        if: >
+         needs.check_alive_and_permissions.outputs.WORKFLOW_PERMISSION == 'true' &&
+         (vars.SCHEDULED_BUILD != 'false' || vars.SCHEDULED_SYNC != 'false')
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin ${{ steps.check_branch.outputs.ALIVE_BRANCH }}
+          git checkout ${{ steps.check_branch.outputs.ALIVE_BRANCH }}
+          if [ -z "$(git log --since='20 days ago' --oneline)" ]; then
+            echo "Trigger keepalive commit"
+            echo "$(date)" > keepalive.txt 
+            git add keepalive.txt
+            git commit -m "Keepalive: automated commit to prevent inactivity"
+            git push origin ${{ steps.check_branch.outputs.ALIVE_BRANCH }}
+          else
+            echo "Recent commit found — no keepalive needed."
+      
       - name: Show scheduled build configuration message
         if: needs.check_alive_and_permissions.outputs.WORKFLOW_PERMISSION != 'true'
         run: |
