@@ -21,9 +21,6 @@ jobs:
       # Checks-out the repo
       - name: Checkout Repo
         uses: actions/checkout@v4
-  
-      - name: Update Fastlane
-          run: gem install fastlane -NV
       
       # Patch Fastlane Match to not print tables  
       - name: Patch Match Tables
@@ -35,12 +32,13 @@ jobs:
             echo "table_printer.rb not found"
             exit 1
           fi
-
+          
       # Install project dependencies
       - name: Install Project Dependencies
         run: |
           gem install fastlane -NV
           bundle install
+
 
       # Sync the GitHub runner clock with the Windows time server (workaround as suggested in https://github.com/actions/runner/issues/2996)
       - name: Sync clock
