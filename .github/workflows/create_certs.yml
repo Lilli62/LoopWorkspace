@@ -1,7 +1,7 @@
 name: 3. Create Certificates
 run-name: Create Certificates (${{ github.ref_name }})
 on:
-  workflow_dispatch:
+  workflow_call:
 
 jobs:
   validate:
