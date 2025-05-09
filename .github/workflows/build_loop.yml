@@ -182,6 +182,7 @@ jobs:
             git push origin ${{ steps.check_branch.outputs.ALIVE_BRANCH }}
           else
             echo "Recent commit found — no keepalive needed."
+          fi
       
       - name: Show scheduled build configuration message
         if: needs.check_alive_and_permissions.outputs.WORKFLOW_PERMISSION != 'true'
